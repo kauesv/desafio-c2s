@@ -13,6 +13,7 @@ venv/
 
 # Ignora arquivos de notas
 anotacoes.txt
+diagrama.mmd
 
 # Banco de dados SQLite
 database.db
