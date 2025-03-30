@@ -9,7 +9,7 @@ if not exist "venv\" (
 
 :: Ativando o ambiente virtual
 echo Ativando ambiente virtual...
-call venv\Scripts\activate.bat
+call venv\scripts\activate
 if %ERRORLEVEL% NEQ 0 (
     echo Falha ao ativar o ambiente virtual.
     exit /b 1

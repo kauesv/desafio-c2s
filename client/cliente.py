@@ -38,7 +38,6 @@ class AgenteVirtual:
             # Perguntando se deseja fazer nova busca
             nova_busca = input(
                 "Deseja fazer uma nova busca? (s/n)",
-                choices=["s", "n", "S", "N"],
                 default="n"
             )
             

@@ -8,21 +8,13 @@ if not exist "venv\" (
 )
 
 :: Ativando o ambiente virtual
-call venv\Scripts\activate
-
-:: Verificando se as dependências estão instaladas
-python -c "import rich" 2>NUL
+echo Ativando ambiente virtual...
+call venv\scripts\activate
 if %ERRORLEVEL% NEQ 0 (
-    echo Dependência não encontrada: rich
-    echo Instalando dependências necessárias...
-    cd client
-    pip install rich websockets colorama prompt_toolkit --no-cache-dir
-    cd ..
+    echo Falha ao ativar o ambiente virtual.
+    exit /b 1
 )
-
-:: Configurando variáveis de ambiente para o cliente
-set MCP_HOST=localhost
-set MCP_PORT=8765
+echo Ambiente virtual ativado com sucesso.
 
 :: Iniciando o cliente
 cd client

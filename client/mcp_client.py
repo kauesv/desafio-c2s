@@ -1,6 +1,7 @@
 from config import Config
 import websockets
 import json
+import asyncio
 
 
 class MCPClient:
@@ -62,3 +63,15 @@ class MCPClient:
                 'mensagem': f'Erro na comunicação: {str(e)}',
                 'resultados': []
             }
+        
+    def buscar_automoveis(self, filtros):
+        """
+        Método síncrono para buscar automóveis usando os filtros fornecidos.
+        
+        Args:
+            filtros (dict): Dicionário com os filtros de busca
+            
+        Returns:
+            dict: A resposta do servidor com os resultados da busca
+        """
+        return asyncio.run(self.enviar_filtros(filtros))
