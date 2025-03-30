@@ -1,5 +1,5 @@
 from utils.database import seed_vehicles
-from server.mcp_server import MCPServer
+from mcp_server import MCPServer
 from database.data_source import DatabaseConnection
 from config import Config
 import sys

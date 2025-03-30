@@ -1,5 +1,5 @@
 @echo off
-echo Iniciando servidor MCP de busca de automóveis...
+echo Iniciando cliente de busca de automóveis...
 
 :: Verificando se o ambiente virtual existe
 if not exist "venv\" (
@@ -16,6 +16,6 @@ if %ERRORLEVEL% NEQ 0 (
 )
 echo Ambiente virtual ativado com sucesso.
 
-:: Iniciando o servidor
-cd server
-python app.py
+:: Iniciando o cliente
+cd client
+python cliente.py

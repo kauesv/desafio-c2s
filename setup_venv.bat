@@ -47,3 +47,5 @@ echo Para iniciar o cliente: .\run_client.bat
 echo =======================================================
 
 exit /b 0
+
+call venv\Scripts\activate

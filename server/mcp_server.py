@@ -12,7 +12,6 @@ class MCPServer:
         self.host = host
         self.port = port
         self.database = DatabaseConnection()
-        self.session = self.database.get_session()
     
     async def processar_filtros(self, filtros):
         """
@@ -65,10 +64,11 @@ class MCPServer:
             condicoes.append(Automovel.numero_portas == filtros['numero_portas'])
         
         # Executando a consulta
+        session = self.database.get_session()
         if condicoes:
-            query = self.session.query(Automovel).filter(and_(*condicoes))
+            query = session.query(Automovel).filter(and_(*condicoes))
         else:
-            query = self.session.query(Automovel)
+            query = session.query(Automovel)
         
         # Limitando resultados para não sobrecarregar
         automoveis = query.limit(20).all()

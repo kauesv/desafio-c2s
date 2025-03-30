@@ -18,21 +18,12 @@ class DatabaseConnection:
         self.engine = create_engine(f'sqlite:///{Config.DATABASE}')
         self.Session = sessionmaker(bind=self.engine)
 
-    @contextmanager
     def get_session(self):
         """
         Gerencia o contexto da sessão com o banco de dados SQLAlchemy.
         Garante que a sessão será fechada após o uso.
         """
-        session = self.Session()
-        try:
-            yield session
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.close()
+        return self.Session()
 
     def setup_database(self):
         """
