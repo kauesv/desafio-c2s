@@ -1,6 +1,11 @@
 from mcp_client import MCPClient
 import sys
 import time
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.prompt import Prompt
+from rich.text import Text
 
 
 class AgenteVirtual:
@@ -9,17 +14,20 @@ class AgenteVirtual:
         """Inicializa o agente virtual."""
         self.cliente_mcp = MCPClient()
         self.filtros = {}
+        self.console = Console()
 
     def saudar(self):
         """Exibe saudação inicial do agente."""
-        print("Olá! Eu sou seu agente virtual. Como posso ajudar?")
+        self.console.clear()
+        self.console.print("Olá! Eu sou seu agente virtual. Como posso ajudar?")
         response = input("Você: ")
 
         return response
 
     def despedir(self):
         """Exibe mensagem de despedida."""
-        print("Obrigado por utilizar nosso sistema de busca de automóveis!")
+        self.console.clear()
+        self.console.print("Obrigado por utilizar nosso sistema de busca de automóveis!")
 
     def iniciar(self):
         """Método principal que inicia a interação com o usuário."""
@@ -31,16 +39,13 @@ class AgenteVirtual:
             if any(termo in resposta.lower() for termo in ['carro', 'automóvel', 'veículo', 'automóveis', 'veículos', 'carros']):
                 self.iniciar_busca()
             else:
-                print("Atualmente só posso ajudar com busca de automóveis.")
+                self.console.print("Atualmente só posso ajudar com busca de automóveis.")
                 time.sleep(2)
                 self.iniciar()
 
             # Perguntando se deseja fazer nova busca
-            nova_busca = input(
-                "Deseja fazer uma nova busca? (s/n)",
-                default="n"
-            )
-            
+            nova_busca = Prompt.ask("Deseja fazer uma nova busca?(s/n)",default="n")
+
             if nova_busca.lower() == 's':
                 self.filtros = {}
                 self.iniciar()
@@ -48,21 +53,26 @@ class AgenteVirtual:
                 self.despedir()
                 
         except KeyboardInterrupt:
-            print("Busca interrompida pelo usuário.")
+            self.console.print("Busca interrompida pelo usuário.")
             self.despedir()
             sys.exit(0)
         except Exception as e:
-            print(f"Erro inesperado: {e}")
+            self.console.print(f"Erro inesperado: {e}")
             self.despedir()
             sys.exit(1)
 
     def iniciar_busca(self):
         """Inicia o processo de busca coletando os critérios do usuário."""
-        print("Ótimo! Vou ajudá-lo a encontrar o automóvel perfeito para você.")
-        print("Vou fazer algumas perguntas para entender melhor o que você está procurando.")
-        
+        self.console.print()
+        self.console.print("Ótimo! Vou ajudá-lo a encontrar o automóvel perfeito para você.")
+        self.console.print("Vou fazer algumas perguntas para entender melhor o que você está procurando.")
+        self.console.print()
+
         # Coletando os filtros de busca
         self.coletar_filtros()
+
+        if not self.filtros:
+            self.console.print("Nenhum filtro foi selecionado. Buscando todos os automóveis disponíveis.")
 
         # Realizando a busca com os filtros coletados
         self.realizar_busca()
@@ -70,35 +80,35 @@ class AgenteVirtual:
     def coletar_filtros(self):
         """Coleta os critérios de busca do usuário."""
         # Marca
-        marca = input("Qual a marca do veículo? (deixe em branco para qualquer marca)")
+        marca = Prompt.ask("Qual a marca do veículo? (deixe em branco para qualquer marca)")
         if marca.lower() not in ['sair', ''] and len(marca) > 1:
             self.filtros['marca'] = marca
         
         # Modelo (se marca foi especificada)
         if 'marca' in self.filtros:
-            modelo = input(f"Qual o modelo {self.filtros['marca']} você procura? (deixe em branco para qualquer modelo)")
+            modelo = Prompt.ask(f"Qual o modelo {self.filtros['marca']} você procura? (deixe em branco para qualquer modelo)")
             if modelo.lower() not in ['sair', ''] and len(modelo) > 1:
                 self.filtros['modelo'] = modelo
         
         # Ano mínimo
-        ano_min = input("Qual o ano mínimo do veículo? (deixe em branco para ignorar)")
+        ano_min = Prompt.ask("Qual o ano mínimo do veículo? (deixe em branco para ignorar)")
         if ano_min.lower() not in ['sair', ''] and ano_min.isdigit():
             self.filtros['ano_min'] = int(ano_min)
         
         # Ano máximo
-        ano_max = input("Qual o ano máximo do veículo? (deixe em branco para ignorar)")
+        ano_max = Prompt.ask("Qual o ano máximo do veículo? (deixe em branco para ignorar)")
         if ano_max.lower() not in ['sair', ''] and ano_max.isdigit():
             self.filtros['ano_max'] = int(ano_max)
         
         # Tipo de combustível
-        print("Qual tipo de combustível você prefere?")
-        print("1. Gasolina")
-        print("2. Etanol")
-        print("3. Flex")
-        print("4. Diesel")
-        print("5. Elétrico")
-        print("6. Híbrido")
-        print("0. Qualquer um")
+        self.console.print("Qual tipo de combustível você prefere?")
+        self.console.print("1. Gasolina")
+        self.console.print("2. Etanol")
+        self.console.print("3. Flex")
+        self.console.print("4. Diesel")
+        self.console.print("5. Elétrico")
+        self.console.print("6. Híbrido")
+        self.console.print("0. Qualquer um")
         
         combustiveis = {
             "1": "Gasolina",
@@ -109,32 +119,33 @@ class AgenteVirtual:
             "6": "Híbrido"
         }
         
-        tipo_comb = input("Escolha uma opção (0-6): ") or "0"
+        tipo_comb = Prompt.ask("Escolha uma opção (0-6): ") or "0"
         if tipo_comb in combustiveis:
             self.filtros['tipo_combustivel'] = combustiveis[tipo_comb]
         
         # Faixa de preço - mínimo
-        preco_min = input("Qual o preço mínimo (em R$)? (deixe em branco para ignorar)")
+        preco_min = Prompt.ask("Qual o preço mínimo (em R$)? (deixe em branco para ignorar)")
         if preco_min.lower() not in ['sair', ''] and preco_min.replace('.','').isdigit():
             self.filtros['preco_min'] = float(preco_min)
         
         # Faixa de preço - máximo
-        preco_max = input("Qual o preço máximo (em R$)? (deixe em branco para ignorar)")
+        preco_max = Prompt.ask("Qual o preço máximo (em R$)? (deixe em branco para ignorar)")
         if preco_max.lower() not in ['sair', ''] and preco_max.replace('.','').isdigit():
             self.filtros['preco_max'] = float(preco_max)
         
         # Cor
-        cor = input("Qual a cor que você prefere? (deixe em branco para qualquer cor)")
+        cor = Prompt.ask("Qual a cor que você prefere? (deixe em branco para qualquer cor)")
         if cor.lower() not in ['sair', ''] and len(cor) > 1:
             self.filtros['cor'] = cor
         
         # Número de portas
-        portas = input("Quantas portas você prefere? (2, 4 ou 5, deixe em branco para ignorar)")
+        portas = Prompt.ask("Quantas portas você prefere? (2, 4 ou 5, deixe em branco para ignorar)")
         if portas.lower() not in ['sair', ''] and portas.isdigit() and int(portas) in [2, 4, 5]:
             self.filtros['numero_portas'] = int(portas)
 
     def realizar_busca(self):
         """Envia os filtros para o servidor MCP e exibe os resultados."""
+        self.console.print()
         print("Buscando automóveis que atendem aos seus critérios...")
 
         # Enviar filtros para o servidor MCP
@@ -144,7 +155,7 @@ class AgenteVirtual:
         if resposta['status'] == 'sucesso':
             self.exibir_resultados(resposta)
         else:
-            print(f"Erro ao realizar a busca: {resposta.get('mensagem', 'Erro desconhecido')}")
+            self.console.print(f"Erro ao realizar a busca: {resposta.get('mensagem', 'Erro desconhecido')}")
 
     def exibir_resultados(self, resposta):
         """Exibe os resultados da busca de forma amigável."""
@@ -152,33 +163,42 @@ class AgenteVirtual:
         quantidade = len(resultados)
         
         if quantidade == 0:
-            print("Não encontramos automóveis que atendam aos seus critérios.")
-            print("Tente novamente com filtros menos específicos.")
+            self.console.print("Não encontramos automóveis que atendam aos seus critérios.")
+            self.console.print("Tente novamente com filtros menos específicos.")
+            Prompt.ask("Pressione ENTER para continuar.")
             return
         
-        print(f"Encontramos {quantidade} automóveis que atendem aos seus critérios!")
+        self.console.print(f"Encontramos {quantidade} automóveis que atendem aos seus critérios!")
         
         # Exibindo cada automóvel
         for i, automovel in enumerate(resultados, 1):
-            self.exibir_automovel(automovel)
+            self.exibir_automovel(automovel, i, quantidade)
             
             # Pausar depois de cada 3 automóveis
             if i % 3 == 0 and i < quantidade:
-                continuar = input("Pressione ENTER para ver mais resultados ou 'q' para sair.")
+                continuar = Prompt.ask("Pressione ENTER para ver mais resultados ou 'q' para sair.")
                 if continuar.lower() == 'q':
                     break
 
-    def exibir_automovel(self, automovel):
+    def exibir_automovel(self, automovel, indice, total):
         """Exibe os detalhes de um automóvel."""
-        painel = f"{automovel['marca']} {automovel['modelo']} {automovel['ano']}\n\n" + \
-                f"• Cor: {automovel['cor']}\n" +\
-                f"• Motor: {automovel['motorizacao']} ({automovel['tipo_combustivel']})\n" +\
-                f"• Quilometragem: {automovel['quilometragem']:,} km\n" +\
-                f"• Transmissão: {automovel['transmissao']} ({automovel['numero_portas']} portas)\n" +\
-                f"• Potência: {automovel['potencia']} cv\n" +\
-                f"• Consumo: {automovel['consumo_cidade']} km/l (cidade) / {automovel['consumo_estrada']} km/l (estrada)\n\n" +\
-                f"Preço: R$ {automovel['preco']:,.2f}"
-        print(painel)
+        self.console.print()
+        painel = Panel(
+            Text(
+                f"{automovel['marca']} {automovel['modelo']} {automovel['ano']}\n\n" + 
+                f"• Cor: {automovel['cor']}\n" +
+                f"• Motor: {automovel['motorizacao']} ({automovel['tipo_combustivel']})\n" +
+                f"• Quilometragem: {automovel['quilometragem']:,} km\n" +
+                f"• Transmissão: {automovel['transmissao']} ({automovel['numero_portas']} portas)\n" +
+                f"• Potência: {automovel['potencia']} cv\n" +
+                f"• Consumo: {automovel['consumo_cidade']} km/l (cidade) / {automovel['consumo_estrada']} km/l (estrada)\n\n" +
+                f"Preço: R$ {automovel['preco']:,.2f}",
+                justify="left"
+            ),
+            title=f"Resultado {indice} de {total}",
+            border_style="green"
+        )
+        self.console.print(painel)
 
 
 if __name__ == "__main__":
