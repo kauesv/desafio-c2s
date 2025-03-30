@@ -67,11 +67,10 @@ class MCPServer:
         session = self.database.get_session()
         if condicoes:
             query = session.query(Automovel).filter(and_(*condicoes))
+            automoveis = query.limit(20).all()
         else:
             query = session.query(Automovel)
-        
-        # Limitando resultados para não sobrecarregar
-        automoveis = query.limit(20).all()
+            automoveis = query.all()
         
         # Convertendo os resultados para dicionários
         resultados = [automovel.to_dict() for automovel in automoveis]
