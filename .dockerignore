@@ -1,0 +1,7 @@
+#   Diretórios
+__pycache__/
+
+#   Arquivos
+.gitignore
+.dockerignore
+docker-compose.yml

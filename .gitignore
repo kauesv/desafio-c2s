@@ -1,0 +1,21 @@
+# Ignora diretórios de cache do Python
+__pycache__
+
+# Ignora arquivos de configuração de ambiente
+*.env
+
+# Ignora diretórios de ambientes virtuais
+venv/
+*.venv
+
+# Ignora logs
+*.log
+
+# Ignora arquivos de notas
+anotacoes.txt
+
+# Banco de dados SQLite
+database.db
+
+/client
+/server
